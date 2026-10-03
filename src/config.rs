@@ -1661,6 +1661,15 @@ impl Config {
         return CONFIG.read().unwrap().clone();
     }
 
+    /// Re-reads the config files, for a process that shares them with another process.
+    pub fn reload() {
+        *KEY_PAIR.lock().unwrap() = None;
+        let config = Config::load();
+        let config2 = Config2::load();
+        *CONFIG.write().unwrap() = config;
+        *CONFIG2.write().unwrap() = config2;
+    }
+
     // TODO: `Config::set()` does not invalidate trusted devices when permanent password/salt changes.
     // This matches historical behavior, but may need revisiting in a separate PR.
     pub fn set(cfg: Config) -> bool {
